@@ -1,0 +1,33 @@
+--- #installing tomcat and java 
+- hosts: webservers
+  connection: ssh
+  become: yes
+  user: ansible
+
+  tasks: 
+   - name: install java
+     yum: 
+        name: java
+        state: present
+        
+   - name: download tomcat software 
+     get_url:
+        url: https://downloads.apache.org/tomcat/tomcat-8/v8.5.81/bin/apache-tomcat-8.5.81.tar.gz.asc
+        dest: /opt
+   - name: unzip tomcat software
+     unarchive: 
+        src: apache-tomcat-8.5.81.tar.gz
+        dest: /opt
+        remote_src: yes
+
+   - name: provide execcutable permission
+     file:
+       path: /opt/apache-tomcat-8.5.81/bin/startup.ssh
+       mode: 0777
+    
+
+   - name: start tomcat service
+     shell: nohup ./startup.sh
+     args:
+       chdir: /opt/apache-tomcat-8.5.81/bin
+
